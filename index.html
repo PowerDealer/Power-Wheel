@@ -1,0 +1,150 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Power Generator</title>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      background-color: #1e1e1e;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .card-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .card {
+      background-color: #2b2b2b;
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+    }
+    .card h2 {
+      margin-top: 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Power Generator</h1>
+  <button onclick="rollPower()">🎲 Roll Power</button>
+  <div id="output" class="card-container" style="display: none;"></div>
+
+  <script>
+    const powers = [{"id": 1, "name": "Fire", "subtypes": ["Fire", "Lava", "Explosions", "Lazer"], "special": null}, {"id": 2, "name": "Water", "subtypes": ["Water", "Vapor", "Ice", "Acid", "Blood"], "special": null}, {"id": 3, "name": "Earth", "subtypes": {"Earth": ["Igneous", "Sedentary", "Metamorphic", "Basic"], "Gem": ["Sapphire", "Diamond", "Garnet", "Amethyst", "Opal", "Ruby", "Aquamarine", "Emerald", "Peridot", "Pearl", "Topaz", "Alexandrite", "Lapis", "Malachite", "Spinel", "Quartz"], "Metal": ["Cu", "Ag", "Au", "Ni", "Pd", "Pt", "Ds", "Co", "Rh", "Ir", "Mt", "Fe", "Ru", "Os", "Hs", "Mn", "Tc", "Re", "Bh", "Cr", "Mo", "W", "Sg", "V", "Nb", "Ta", "Db", "Ti", "Zr", "Hf", "Rf", "Sc", "Y", "Lu", "Lr"]}, "special": null}, {"id": 4, "name": "Air", "subtypes": {"Air": ["Air", "Poison"], "Gas": ["H", "N", "O", "F", "Cl", "He", "Ne", "Ar", "Kr", "Xe", "Rn"], "Radiation": ["Radiation"]}, "special": null}, {"id": 5, "name": "Get 2", "special": "get2"}, {"id": 6, "name": "Time", "subtypes": ["Speed", "Stop", "Slow", "Rewind", "Cut"], "special": null}, {"id": 7, "name": "Physical", "subtypes": ["Speed", "Strength", "Precision", "Reaction", "Durability", "Stamina"], "special": null}, {"id": 8, "name": "Heal", "subtypes": ["Regeneration", "Instant", "Cleanse", "Resurrection"], "special": null}, {"id": 9, "name": "Harm", "subtypes": ["Decay", "Instant", "Poison"], "special": null}, {"id": 10, "name": "Teleport", "subtypes": ["Instant", "Portal"], "special": null}, {"id": 11, "name": "Telekinetic", "subtypes": ["Telekinesis", "Phantom Limb", "Mind Attack"], "special": null}, {"id": 12, "name": "Get 2", "special": "get2"}, {"id": 13, "name": "Animal", "subtypes": {"Type": ["Abilities", "Spirit of", "Spirit Guard"], "Size": ["Xs", "S", "M", "L", "XL"], "Land": ["Land", "Air", "Water"], "Genotype": ["Carnivore", "Herbivore", "Omnivore", "Fantasy Creature"]}, "special": null}, {"id": 14, "name": "Body Size", "subtypes": ["Grow", "Shrink", "Extend", "Stretch"], "special": null}, {"id": 15, "name": "Cancel", "subtypes": ["Powers", "Body"], "special": null}, {"id": 16, "name": "Combine 2", "special": "combine2"}, {"id": 17, "name": "Shapeshift", "subtypes": {"Type": ["Organic", "Objects"], "Max Size": ["Xs", "S", "M", "L", "XL"], "Area": ["Partial", "Full"]}, "special": null}, {"id": 18, "name": "Sound", "subtypes": ["Sound", "Volume"], "special": null}, {"id": 19, "name": "Copy Power", "special": null}, {"id": 20, "name": "Breaker", "subtypes": ["Disintegrate", "Chunk", "Erase"], "special": null}, {"id": 21, "name": "Condition", "subtypes": ["Sleep", "Vertigo", "Blindness", "Paralysis", "Slow", "Power Malfunction", "Stun", "Root", "Confusion"], "special": null}, {"id": 22, "name": "Light", "subtypes": ["Light", "Hard Light", "Awareness", "Turn to Light"], "special": null}, {"id": 23, "name": "Dark", "subtypes": ["Dark", "Hard Dark", "Dull", "Fade to Dark"], "special": null}, {"id": 24, "name": "Turn into Orb", "special": null}, {"id": 25, "name": "Force", "subtypes": ["Stop", "Move", "Explode", "Invisibility", "Force Field"], "special": null}, {"id": 26, "name": "Energy", "subtypes": ["Energy", "Polarity", "Electricity", "Magnetism"], "special": null}, {"id": 27, "name": "Disaster", "subtypes": ["Sun Beam", "Storm", "Tornado", "Blizzard", "Earthquake"], "special": null}, {"id": 28, "name": "Gravity Control", "special": null}, {"id": 29, "name": "Duplicate", "subtypes": ["Death Trap", "No Trap"], "special": null}, {"id": 30, "name": "Space", "subtypes": ["Orbit", "Meteor", "Comet", "Black Hole"], "special": null}, {"id": 31, "name": "Extra Limb", "subtypes": ["Extra Limb", "Tail", "Bones"], "special": null}, {"id": 32, "name": "Writing 1 Syllable", "subtypes": ["Adjective", "Sound Verb", "Noun Transmogrification"], "special": null}, {"id": 33, "name": "Plant", "subtypes": ["Vine", "Tree", "Fungus"], "special": null}, {"id": 34, "name": "Reject", "subtypes": ["Reflect", "Deflect", "Thorns", "Backlash Lorier"], "special": null}, {"id": 35, "name": "Animate", "special": null}, {"id": 36, "name": "Necro", "subtypes": ["Skeleton", "Zombie", "People"], "special": null}];
+    const ranges = ["200 yards", "100 yards", "50 yards", "5 yards", "100 yards", "50 yards", "10 yards", "Infinite", "Normal", "Self", "25 yards", "100 yards", "300 yards", "150 yards", "500 yards", "50 yards", "20 yards", "100 yards", "75 yards"];
+    const targets = ["Self", "Others", "Vocal target", "Multi target", "Multi area", "Touch", "Single Target", "Single area", "Radius", "Look"];
+    const damageTypes = ["Normal", "Normal", "Normal", "Normal", "Soul", "Normal", "Normal", "Normal", "Mental", "Normal", "Normal", "Normal", "Normal", "Normal", "Choose 2"];
+    const augments = [{"name": "Detect", "special": null}, {"name": "Merge", "special": null}, {"name": "Barrier", "special": null}, {"name": "Flight", "special": null}, {"name": "None", "special": null}, {"name": "Immune", "special": null}, {"name": "Resist", "special": null}, {"name": "Breath", "special": null}, {"name": "Absorb", "special": null}, {"name": "Glyph", "special": null}, {"name": "Laser", "special": null}, {"name": "Phase", "special": null}, {"name": "Stamina Steal", "special": null}, {"name": "Combine 2 Powers", "special": null}, {"name": "Summon Spirit", "special": null}, {"name": "Summon Object", "special": null}, {"name": "Summon Domain", "special": null}, {"name": "Built In", "special": null}, {"name": "Summon Minion", "special": null}, {"name": "All Phase", "special": null}, {"name": "Ricochet", "special": null}, {"name": "Lobbed", "special": null}, {"name": "Life Steal", "special": null}, {"name": "Immunity Pierce", "special": null}, {"name": "Get 2 Augments", "special": "get2"}, {"name": "Fragment", "special": null}, {"name": "Chain Bounce", "special": null}, {"name": "Invisible", "special": null}, {"name": "Tether", "special": null}, {"name": "Lunar", "special": null}, {"name": "Solar", "special": null}, {"name": "Mind of Own", "special": null}, {"name": "Partial Morph", "special": null}, {"name": "Unstoppable", "special": null}, {"name": "Consecutive Boost", "special": null}, {"name": "Controllable Beam", "special": null}, {"name": "Crit % Chance", "special": null}, {"name": "Stronger", "special": null}, {"name": "Node", "special": null}, {"name": "Mutated Mode", "special": null}, {"name": "Envy", "special": null}, {"name": "Gluttony", "special": null}, {"name": "Wrath", "special": null}, {"name": "Sloth", "special": null}, {"name": "Pride", "special": null}, {"name": "Lust", "special": null}, {"name": "Greed", "special": null}, {"name": "Boomerang", "special": null}, {"name": "Power Mastery", "special": null}, {"name": "Get 2 Augments", "special": "get2"}, {"name": "Get 2 Subclass", "special": null}, {"name": "Made of (Logia)", "special": null}, {"name": "Low Stamina Cost", "special": null}, {"name": "All Subclasses", "special": null}, {"name": "Get 2 Augments", "special": "get2"}, {"name": "Execute (1-20)", "special": null}, {"name": "2x per Activation (1-20)", "special": null}, {"name": "Aquarius", "special": null}, {"name": "Aries", "special": null}, {"name": "Capricorn", "special": null}, {"name": "Cancer", "special": null}, {"name": "Tarus", "special": null}, {"name": "Sadgetarius", "special": null}, {"name": "Libra", "special": null}, {"name": "Leo", "special": null}, {"name": "Pisces", "special": null}, {"name": "Scorpio", "special": null}, {"name": "Gemini", "special": null}, {"name": "Virgo", "special": null}, {"name": "13th Zodiac", "special": null}];
+
+    function getRandom(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function generateDamage() {
+      let damage = getRandom(damageTypes);
+      if (damage === "Choose 2") {
+        let d1 = getRandom(damageTypes.filter(d => d !== "Choose 2"));
+        let d2;
+        do { d2 = getRandom(damageTypes.filter(d => d !== "Choose 2")); } while (d2 === d1);
+        return `${d1} + ${d2}`;
+      }
+      return damage;
+    }
+
+    function formatPowerCard(power) {
+      let subtypeInfo = "";
+
+      if (power.subtypes) {
+        if (Array.isArray(power.subtypes)) {
+          subtypeInfo = `Subtype: ${getRandom(power.subtypes)}`;
+        } else {
+          subtypeInfo = Object.entries(power.subtypes).map(([cat, values]) => {
+            return `${cat}: ${getRandom(values)}`;
+          }).join("<br>");
+        }
+      } else {
+        subtypeInfo = "No subtype.";
+      }
+
+      const range = getRandom(ranges);
+      const target = getRandom(targets);
+      const damage = generateDamage();
+
+      return `
+        <div class="card">
+          <h2>${power.name}</h2>
+          <p>${subtypeInfo}</p>
+          <p><strong>Range:</strong> ${range}</p>
+          <p><strong>Target:</strong> ${target}</p>
+          <p><strong>Damage Type:</strong> ${damage}</p>
+        </div>
+      `;
+    }
+
+    function formatAugmentSection() {
+      const picked = [];
+      let total = 1;
+
+      function pickAugment() {
+        let a;
+        do { a = getRandom(augments); } while (picked.find(p => p.name === a.name));
+        picked.push(a);
+        if (a.special === "get2") {
+          total += 2;
+        }
+      }
+
+      while (picked.length < Math.min(4, total)) {
+        pickAugment();
+      }
+
+      const labels = picked.map(a => `<li>${a.name}</li>`).join("");
+      return `<p><strong>Augments:</strong><ul>${labels}</ul></p>`;
+    }
+
+    function rollPower() {
+      const output = document.getElementById("output");
+      output.style.display = "flex";
+
+      const mainPower = getRandom(powers);
+
+      if (mainPower.special === "get2") {
+        let p1, p2;
+        do { p1 = getRandom(powers); } while (p1.special);
+        do { p2 = getRandom(powers); } while (p2.special || p2.name === p1.name);
+        output.innerHTML = formatPowerCard(p1) + formatAugmentSection() +
+                           formatPowerCard(p2) + formatAugmentSection();
+      } else if (mainPower.special === "combine2") {
+        let p1, p2;
+        do { p1 = getRandom(powers); } while (p1.special);
+        do { p2 = getRandom(powers); } while (p2.special || p2.name === p1.name);
+        const combined = {
+          name: `${p1.name} + ${p2.name}`,
+          subtypes: {
+            ...p1.subtypes,
+            ...p2.subtypes
+          }
+        };
+        output.innerHTML = formatPowerCard(combined) + formatAugmentSection();
+      } else {
+        output.innerHTML = formatPowerCard(mainPower) + formatAugmentSection();
+      }
+    }
+  </script>
+</body>
+</html>
